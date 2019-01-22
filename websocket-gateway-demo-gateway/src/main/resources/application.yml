@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: gateway
+eureka:
+  client:
+    healthcheck:
+      enabled: true
+  instance:
+    prefer-ip-address: true

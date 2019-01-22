@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  rabbitmq:
+    build: ./rabbitmq_stomp
+    labels:
+      kompose.service.type: nodeport
+    ports:
+      - '4369:4369'
+      - '5672:5672'
+      - '25672:25672'
+      - '15672:15672'
+      - '61613:61613'
+    volumes:
+      - 'rabbitmq_data:/bitnami'
+volumes:
+  rabbitmq_data:
+    driver: local
