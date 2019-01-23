@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: client
+  rabbitmq:
+    addresses: localhost
+    port: 61613
+eureka:
+  client:
+    healthcheck:
+      enabled: true
+  instance:
+    prefer-ip-address: true
+---
+
+spring:
+  profiles: app1
+server:
+  port: 8081
+
+---
+
+spring:
+  profiles: app2
+server:
+  port: 8082
