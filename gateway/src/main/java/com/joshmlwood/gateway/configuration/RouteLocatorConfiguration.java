@@ -11,11 +11,6 @@ public class RouteLocatorConfiguration {
     public RouteLocator myRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
             .route(p -> p
-                // give `ws` protocol higher prescience, but allow standard http fallback
-                .path("/websocket/**")
-                .uri("lb:ws://client/websocket")
-            )
-            .route(p -> p
                 .path("/websocket/**")
                 .uri("lb://client/websocket")
             )
