@@ -6,6 +6,5 @@ COPY src src
 RUN mvn clean package -Dmaven.test.skip=true
 
 FROM openjdk:8-jre-alpine
-COPY --from=build /opt/src/target/websocket-gateway-demo-activemq-0.0.1-SNAPSHOT.jar /opt/app.jar
-EXPOSE 61613
+COPY --from=build /opt/src/target/websocket-gateway-demo-server-0.0.1-SNAPSHOT.jar /opt/app.jar
 ENTRYPOINT ["java","-jar","/opt/app.jar"]

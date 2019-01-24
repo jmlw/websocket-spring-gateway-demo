@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  activemq:
+    build: ./activemq
+  eureka:
+    build: ./eureka
+    ports:
+      - '8761:8761'
+  gateway:
+    build: ./eureka
+    ports:
+      - '8080:8080'
+  server-app1:
+    build: ./server
+    environment:
+      - SPRING_PROFILES_ACTIVE=app1
+  server-app2:
+    build: ./server
+    environment:
+      - SPRING_PROFILES_ACTIVE=app2
