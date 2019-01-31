@@ -1,5 +1,6 @@
 package com.joshmlwood.server.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -10,6 +11,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    @Value("${broker.relay.host}")
+    private String brokerRelayHost;
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         /*
@@ -17,7 +21,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
          * that begins with `/topic`. For example, a method with @SendTo("/outgoing") will allow a client
          * to subscribe on "/topic/outgoing" to receive messages from the websocket server
          */
-        registry.enableStompBrokerRelay("/queue", "/topic");
+        registry.enableStompBrokerRelay("/queue", "/topic")
+            .setRelayHost(brokerRelayHost);
         /*
          * all destinations (request mappings in mvc / rest terms) will accept requests from destinations
          * prefixed with `/app`. For example, a @MessageMapping("/hello") will receive messages from the
