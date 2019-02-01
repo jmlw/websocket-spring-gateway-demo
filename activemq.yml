@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  activemq:
+    build: ./activemq
+    environment:
+      - EUREKA_URI=http://eureka:8761/eureka
+      - BROKER_HOST=0.0.0.0
+
+  eureka:
+    build: ./eureka
+    ports:
+      - '8761:8761'
+
+  gateway:
+    build: ./gateway
+    ports:
+      - '8080:8080'
+    environment:
+      - EUREKA_URI=http://eureka:8761/eureka
+
+  server-app1:
+    build: ./server
+    environment:
+      - SPRING_PROFILES_ACTIVE=app1
+      - EUREKA_URI=http://eureka:8761/eureka
+      - BROKER_RELAY_HOST=activemq
+
+  server-app2:
+    build: ./server
+    environment:
+      - SPRING_PROFILES_ACTIVE=app2
+      - EUREKA_URI=http://eureka:8761/eureka
+      - BROKER_RELAY_HOST=activemq

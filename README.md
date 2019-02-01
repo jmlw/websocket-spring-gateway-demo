@@ -24,14 +24,27 @@ The provided message broker is Apache ActiveMQ, however it's possible to swap ou
 - Web browser
 
 ## Running
-Start up servers:
+### Using Docker Compose and ActiveMQ:
+- Run `docker-compose -f activemq.yml up -d` to build and start the containers
+  - Access Eureka console via http://localhost:8761 or health via http://localhost:8761/actuator/health
+  - Access Gateway and application endpoints through http://localhost:8080, or health via http://localhost:8080/actuator/health
+    - NOTE: There is no default route
+- open `example.html` in a websocket compatible browser
+
+### Start up servers manually:
 - `cd activemq` then `./mvnw spring-boot:run`
 - `cd eureka` then `./mvnw spring-boot:run`
 - `cd gateway` then `./mvnw spring-boot:run`
 - `cd server` then `./mvnw spring-boot:run -Dspring.profiles.active=app1`
 - `cd server` then `./mvnw spring-boot:run -Dspring.profiles.active=app2`
-- open `example.html` in a websocket comptaible browser
+- open `example.html` in a websocket compatible browser
 
 During startup be patient as eureka attempts to resolve location and port, as well as health for each of the discovery enabled applications (gateway, server [app1], and server [app2]). This could take some time for the discovery server and clients to begin accepting requests.
 
 I've added a timed method to respond to the same websocket topic which the client is subscribed to to simulate push notifications from the server, either in response to a system action or in response to another user's action.
+
+### Demonstration of the project running
+![Websocket demonstration](https://github.com/{jmlw}/{websocket-spring-gateway-demo}/raw/master/ws-demo-1.gif)
+
+### Demonstration with second user in another window
+![Websocket demonstration with second user](https://github.com/{jmlw}/{websocket-spring-gateway-demo}/raw/master/ws-demo-2.gif)
