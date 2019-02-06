@@ -22,12 +22,14 @@
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.3.0/sockjs.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@5.0.0/bundles/stomp.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
   <script>
     var stompClient = null;
 
     function setConnected(connected) {
       $("#connect").prop("disabled", connected);
+      $("#connectSockJS").prop("disabled", connected);
       $("#disconnect").prop("disabled", !connected);
       if (connected) {
         $("#responses").show();
@@ -47,33 +49,56 @@
 
     function onSocketClose() {
       if (stompClient !== null) {
-        stompClient.disconnect();
+        stompClient.deactivate();
       }
       setConnected(false);
       console.log("Socket was closed. Setting connected to false!")
     }
 
     function connect() {
-      var socket = new SockJS('http://localhost:8080/websocket');
-      stompClient = Stomp.over(socket);
-      stompClient.connect({}, function (frame) {
-        frameHandler(frame)
+      stompClient = new window.StompJs.Client({
+        webSocketFactory: function () {
+          return new WebSocket("ws://localhost:8080/websocket");
+        }
       });
-      socket.onclose = function () {
+      // stompClient = Stomp.over(socket);
+      stompClient.onConnect = function (frame) {
+        frameHandler(frame)
+      };
+      stompClient.onWebsocketClose = function () {
         onSocketClose();
-      }
+      };
+
+      stompClient.activate();
+    }
+
+    function connectSockJs() {
+      stompClient = new window.StompJs.Client({
+        webSocketFactory: function () {
+          return new window.SockJS("http://localhost:8080/sockjs-websocket");
+        }
+      });
+      // stompClient = Stomp.over(socket);
+      stompClient.onConnect = function (frame) {
+        frameHandler(frame)
+      };
+      stompClient.onWebsocketClose = function () {
+        onSocketClose();
+      };
+
+      stompClient.activate();
     }
 
     function disconnect() {
       if (stompClient !== null) {
-        stompClient.disconnect();
+        stompClient.deactivate();
       }
       setConnected(false);
       console.log("Disconnected");
     }
 
     function sendMessage() {
-      stompClient.send("/app/incoming", {}, JSON.stringify({'message': $("#message").val()}));
+      stompClient.publish({destination:"/app/incoming", headers: {}, body: JSON.stringify({'message': $("#message").val()})});
     }
 
     function showMessage(message) {
@@ -90,6 +115,9 @@
       });
       $("#connect").click(function () {
         connect();
+      });
+      $("#connectSockJS").click(function () {
+        connectSockJs();
       });
       $("#disconnect").click(function () {
         disconnect();
@@ -114,6 +142,7 @@
         <div class="form-group">
           <label for="connect">WebSocket connection:</label>
           <button class="btn btn-default" id="connect" type="submit">Connect</button>
+          <button class="btn btn-default" id="connectSockJS" type="submit">ConnectSockJS</button>
           <button class="btn btn-default" disabled="disabled" id="disconnect" type="submit">Disconnect
           </button>
         </div>

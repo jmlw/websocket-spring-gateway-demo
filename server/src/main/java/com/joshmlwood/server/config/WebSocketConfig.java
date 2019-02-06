@@ -39,6 +39,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
          * connection from. All clients will use this URL to open a connection to this websocket server
          */
         registry.addEndpoint("/websocket")
+            .setAllowedOrigins("*");
+        registry.addEndpoint("/sockjs-websocket")
             .setAllowedOrigins("*")
             .withSockJS();
     }
